@@ -12,7 +12,7 @@ class MyHDF5Plugin(HDF5Plugin, FileStoreHDF5IterativeWrite):
 	file_number_sync = None
 	
 	def get_frames_per_point(self):
-		return 1  # FIXME: HACK! Find this value in EPICS.
+		return self.parent.cam.num_images.get()
 	
 
 class MyDetector(SingleTrigger, SimDetector):
@@ -39,5 +39,23 @@ example::
 	imgs[0][0]
 	data_uid = simdet.read()['simdet_image']['value']
 	fs.retrieve(data_uid)                                                    
+
+
+	In [15]: %history
+	simdet.describe()
+	RE(count([simdet]))
+	db.get_images(db[-1], 'simdet_image')
+	images = _
+	images[0]
+	images[0][0]
+	simdet.cam.num_images.set(2)
+	RE(count([simdet]))
+	db.get_images(db[-1], 'simdet_image')
+	images = _
+	images[0][0]
+	images[0]
+	images[0][1]
+	%history
+
 
 """
