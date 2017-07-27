@@ -565,3 +565,10 @@
 ## If True, any %store-d variables will be automatically restored when IPython
 #  starts.
 #c.StoreMagics.autorestore = False
+
+# BlueSky setup: http://nsls-ii.github.io/install.html#ipython-profile
+c.StoreMagics.autorestore = True
+#c.InteractiveShellApp.extensions = ['ophyd.session',
+#                                    #'pyOlog.cli.ipy',
+#                                    ]
+#c.TerminalIPythonApp.pylab = 'auto'
