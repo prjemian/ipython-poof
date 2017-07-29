@@ -44,5 +44,3 @@ register_builtin_handlers(fs)
 from bluesky.global_state import gs
 gs.RE.subscribe('all', mds.insert)
 RE = gs.RE  # convenience alias
-
-
