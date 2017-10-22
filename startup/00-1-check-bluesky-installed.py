@@ -1,4 +1,4 @@
-import sys
+print(__file__)
 
 # ensure BlueSky is available
 try:
@@ -9,3 +9,10 @@ except ImportError:
     msg += '\n'*2
     msg += 'You should type `exit` now and find the ipython with BlueSky'
     raise ImportError(msg)
+
+_major, _minor,  = map(int, bluesky.__version__.split(".")[:2])
+if _major == 0:
+    if _minor < 10:
+       msg = "Need at least BlueSky version >= 0.10, you have "
+       msg += bluesky.__version__
+       raise ValueError(msg)

@@ -1,7 +1,6 @@
 print(__file__)
 
 import pyRestTable
-from ophyd.epics_motor import EpicsMotor
 
 # example user function
 

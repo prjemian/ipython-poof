@@ -22,14 +22,15 @@ class MyDetector(SingleTrigger, SimDetector):
 		"HDF1:", 
 		root="/", 					# for databroker filestore
 		write_path_template="/tmp",	# for EPICS area detector
-		fs=fs,
 		)
 
-
-simdet = MyDetector('13SIM1:', name='simdet')
-simdet.read_attrs = ['hdf1', 'cam']
-simdet.hdf1.read_attrs = []  # 'image' gets added dynamically
-#simdet = SimDetector('13SIM1:')
+try:
+	simdet = MyDetector('13SIM1:', name='simdet')
+	simdet.read_attrs = ['hdf1', 'cam']
+	simdet.hdf1.read_attrs = []  # 'image' gets added dynamically
+	#simdet = SimDetector('13SIM1:')
+except TimeoutError:
+	print("Could not connect 13SIM1: sim detector")
 
 """
 example::

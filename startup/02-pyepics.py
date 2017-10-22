@@ -7,4 +7,3 @@ Do this early in the setup so other setup can benefit.
 '''
 
 import epics
-

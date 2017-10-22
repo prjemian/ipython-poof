@@ -1,6 +1,5 @@
 print(__file__)
 
-
 # Set up default complex devices
 
 # FIXME: how to get the PVs to the inner parts?
