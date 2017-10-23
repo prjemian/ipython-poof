@@ -64,12 +64,13 @@ def maximize_signal(
 
             yield Msg('save')
 
-            if next_pos < stop:	# FIXME: "<" assumes sign of scan direction
+            if next_pos < stop: # FIXME: "<" assumes sign of scan direction
                 next_pos += step
             else:
                 # TODO: use COM instead
-                start = peak_position - step
-                stop = peak_position + step
+                # TODO: report current peak_position in metadata
+                start = peak_position - 2*step
+                stop = peak_position + 2*step
                 step = (stop - start) / (num_points - 1)
                 next_pos = start
 
@@ -80,5 +81,20 @@ def maximize_signal(
     return (yield from _tune_core(start, stop, num_points, signal))
 
 
-if False:		# demo & testing code
+if False:       # demo & testing code
+    simulate_peak(calc1, m1, profile="lorentzian")
     RE(maximize_signal([noisy], "noisy", m1, -2, 0, 10, 0.00001))
+    
+    RE(
+        maximize_signal(
+            [syntheic_pseudovoigt], "syntheic_pseudovoigt", m1, 
+            -2, 0, 10, 0.00001
+        )
+    )
+    RE(
+        bp.adaptive_scan(
+            [syntheic_pseudovoigt], 'syntheic_pseudovoigt', m1, 
+            start=-2, stop=0, min_step=0.01, max_step=1, 
+            target_delta=500, backstep=True
+        )
+    )
