@@ -71,7 +71,7 @@ def swait_setup_random_number(swait, **kw):
     swait.reset()
     swait.scan.put("Passive")
     swait.calc.put("RNDM")
-    swait.scan.put(".5 second")
+    swait.scan.put(".1 second")
 
 
 def swait_setup_gaussian(swait, motor, center=0, width=1, scale=1, noise=0.05):
@@ -114,21 +114,20 @@ calc1 = swaitRecord("xxx:userCalc1")
 
 if False:       # demo & testing code
     
-    def simulate_peak(swait, motor, profile="gaussian", start=-1.5, stop=-0.5):
-        simulator = dict(
-            gaussian = swait_setup_gaussian,
-            lorentzian = swait_setup_lorentzian,
-        ).get(profile)
-        if simulator is not None:
+    def simulate_peak(swait, motor, profile=None, start=-1.5, stop=-0.5):
+        if profile is not None:
+            simulator = dict(
+                gaussian = swait_setup_gaussian,
+                lorentzian = swait_setup_lorentzian,
+            )[profile]
             kw = dict(
                 center = start + np.random.uniform()*(stop-start), 
                 width = 0.002 + 0.1*np.random.uniform(), 
                 scale = 100000 * np.random.uniform(), 
                 noise = 0.05 + 0.1*np.random.uniform())
+            simulator(swait, motor, **kw)
         else:
-            simulator = swait_setup_random_number
-            kw = {}
-        simulator(swait, m1, **kw)
+            swait_setup_random_number(swait)
 
     def both_peaks():
         simulate_peak(calc1, m1, profile="gaussian")
