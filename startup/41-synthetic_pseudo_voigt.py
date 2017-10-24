@@ -31,6 +31,12 @@ class SynPseudoVoigt(bluesky.examples.Reader):
         assert(0 <= eta < 1.0)
         assert(scale >= 1)
         assert(sigma > 0)
+        self.name = name
+        self.motor = motor
+        self.center = center
+        self.eta = eta
+        self.scale = scale
+        self.sigma = sigma
 
         def f_lorentzian(x, gamma):
             #return gamma / np.pi / (x**2 + gamma**2)
@@ -43,8 +49,10 @@ class SynPseudoVoigt(bluesky.examples.Reader):
 
         def pvoigt():
             m = motor.read()[motor_field]['value']
-            v = eta * f_lorentzian(m - center, sigma)
-            v += (1-eta) * f_gaussian(m - center, sigma)
+            g_max = f_gaussian(0, sigma)
+            l_max = f_lorentzian(0, sigma)
+            v = eta * f_lorentzian(m - center, sigma) / l_max
+            v += (1-eta) * f_gaussian(m - center, sigma) / g_max
             v *= scale
             v = int(np.random.poisson(np.round(v), None))
             return v
@@ -52,6 +60,9 @@ class SynPseudoVoigt(bluesky.examples.Reader):
         super().__init__(name, {name: pvoigt}, **kwargs)
 
 
-syntheic_pseudovoigt = SynPseudoVoigt(
-	'syntheic_pseudovoigt', m1, 'm1', 
-    center=-1.2, eta=0.5, sigma=0.01, scale=1e5)
+synthetic_pseudovoigt = SynPseudoVoigt(
+    'synthetic_pseudovoigt', m1, 'm1', 
+    center=-1.5 + 0.5*np.random.uniform(), 
+    eta=0.3 + 0.5*np.random.uniform(), 
+    sigma=0.001 + 0.05*np.random.uniform(), 
+    scale=1e5)
