@@ -7,8 +7,10 @@ from bluesky.utils import Msg, separate_devices
 
 def tune_centroid(
         detectors, signal, motor, 
-        start, stop, num_points, min_step, 
+        start, stop, min_step, 
+        num_points = 10, 
         step_factor = 2,
+        snake = False,
         *, md=None):
     """
     plan: tune a motor by maximizing a signal
@@ -19,6 +21,9 @@ def tune_centroid(
     Rescans will be centered on the signal centroid
     (for $I(x)$, centroid$= \sum{I}/\sum{x*I}$)
     with a scan range of 2*step_factor*step of current scan.
+    
+    Set `snake=True` if your positions are reproducible
+    moving from either direction.
 
     Parameters
     ----------
@@ -32,13 +37,14 @@ def tune_centroid(
         note: For EpicsMotors, ``min_step=min(min_step,motor.MRES)``
         is used.
     step_factor : (float) used in calculating range when 
-        maximum is found, note: step_factor > 0
+        maximum is found, note: step_factor > 0, default = 2
+    snake : (bool) if False (default), always scan from start to stop
 
     Example
     -------
     motor = Mover('motor', {'motor': lambda x: x}, {'x': 0})
     det = SynGauss('det', m1, 'm1', center=-1.3, Imax=1e5, sigma=0.021)
-    RE(tune_centroid([det], "det", motor, -1.5, -0.5, 10, 0.01))
+    RE(tune_centroid([det], "det", motor, -1.5, -0.5, 0.01, 10))
 
     m1 = EpicsMotor('xxx:m1', name='m1')
     synthetic_pseudovoigt = SynPseudoVoigt(
@@ -51,15 +57,15 @@ def tune_centroid(
         tune_centroid(
             [synthetic_pseudovoigt], "synthetic_pseudovoigt", 
             motor, 
-            -2, 0, 10, 0.001
+            -2, 0, 0.001, 10
         )
     )
     """
     assert(isinstance(num_points, int))
-    assert(num_points > 1)
-    assert(start < stop)
-    assert(step_factor > 0)
-    # assert(isinstance(motor, EpicsMotor))
+    assert(step_factor > 0)  # "step_factor must be positive"
+    assert((num_points - 1) > 2*step_factor)
+    #   "Increase num_points and/or decrease step_factor"
+    #   " or search range will not converge to a solution"
     if isinstance(motor, EpicsMotor):
         min_step = max(min_step, epics.caget(motor.prefix+".MRES"))
     _md = {'detectors': [det.name for det in detectors],
@@ -89,10 +95,11 @@ def tune_centroid(
         peak_position = None
         cur_I = None
         cur_det = {}
-        sum_I = 0		# for peak centroid calculation, I(x)
+        sum_I = 0       # for peak centroid calculation, I(x)
         sum_xI = 0
         
-        while step >= min_step:
+        while abs(step) >= min_step:
+            #print(start, stop, step)
             yield Msg('checkpoint')
             yield from bp.mv(motor, next_pos)
             yield Msg('create', None, name='primary')
@@ -109,7 +116,12 @@ def tune_centroid(
 
             yield Msg('save')
 
-            if next_pos < stop: # FIXME: "<" assumes sign of scan direction
+            if (stop - start) < abs(stop - start):
+                in_range = start >= next_pos >= stop  # negative motion
+            else:
+                in_range = start <= next_pos <= stop  # positive motion
+            
+            if in_range:
                 next_pos += step
             else:
                 if sum_I == 0:
@@ -119,6 +131,8 @@ def tune_centroid(
                 RE.md["peak_position"] = str(peak_position)
                 start = peak_position - step_factor*step
                 stop = peak_position + step_factor*step
+                if snake:
+                    start, stop = stop, start
                 step = (stop - start) / (num_points - 1)
                 next_pos = start
 
@@ -134,12 +148,12 @@ def tune_centroid(
 
 if False:       # demo & testing code
     simulate_peak(calc1, m1, profile="lorentzian")
-    RE(tune_centroid([noisy], "noisy", m1, -2, 0, 10, 0.00001))
+    RE(tune_centroid([noisy], "noisy", m1, -2, 0, 0.00001, 10))
     
     RE(
         tune_centroid(
             [synthetic_pseudovoigt], "synthetic_pseudovoigt", m1, 
-            -2, 0, 10, 0.00001
+            -2, 0, 0.00001, 10
         )
     )
     RE(
