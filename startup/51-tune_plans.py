@@ -13,7 +13,7 @@ def tune_centroid(
         snake = False,
         *, md=None):
     """
-    plan: tune a motor by maximizing a signal
+    plan: tune a motor to the centroid of signal(motor)
     
     Initially, traverse the range from start to stop with
     the number of points specified.  Repeat with progressively
@@ -33,23 +33,32 @@ def tune_centroid(
 
     Parameters
     ----------
-    detectors : (Signal) list of signals
-    signal : (str) name of signal to maximize
-    motor : (Mover) positioner to be moved
-    start : (float) start of range
-    stop : (float) end of range, note: start < stop
-    num_points : (int) number of points with each step size
-    min_step : (float) smallest step size to use.
+    detectors : Signal
+        list of 'readable' objects
+    signal : string
+        detector field whose output is to maximize
+    motor : object
+        any 'setable' object (motor, temp controller, etc.)
+    start : float
+        start of range
+    stop : float
+        end of range, note: start < stop
+    min_step : float
+        smallest step size to use.
         note: For EpicsMotors, ``min_step=min(min_step,motor.MRES)``
         is used.
-    step_factor : (float) used in calculating range when 
+    num_points : int, optional
+        number of points with each step size, default = 10
+    step_factor : float, optional
+        used in calculating range when 
         maximum is found, note: step_factor > 0, default = 2
-    snake : (bool) if False (default), always scan from start to stop
+    snake : bool, optional
+        if False (default), always scan from start to stop
 
     Example
     -------
     motor = Mover('motor', {'motor': lambda x: x}, {'x': 0})
-    det = SynGauss('det', m1, 'm1', center=-1.3, Imax=1e5, sigma=0.021)
+    det = SynGauss('det', motor, 'motor', center=-1.3, Imax=1e5, sigma=0.021)
     RE(tune_centroid([det], "det", motor, -1.5, -0.5, 0.01, 10))
 
     m1 = EpicsMotor('xxx:m1', name='m1')
