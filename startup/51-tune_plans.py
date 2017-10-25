@@ -61,11 +61,13 @@ def tune_centroid(
         )
     )
     """
-    assert(isinstance(num_points, int))
-    assert(step_factor > 0)  # "step_factor must be positive"
-    assert((num_points - 1) > 2*step_factor)
-    #   "Increase num_points and/or decrease step_factor"
-    #   " or search range will not converge to a solution"
+    if step_factor <= 0:
+		raise ValueError("step_factor must be positive")
+    if (num_points - 1) <= 2*step_factor:
+		raise ValueError(
+			"Increase num_points and/or decrease step_factor"
+			" or tune_centroid will never converge to a solution"
+		)
     if isinstance(motor, EpicsMotor):
         min_step = max(min_step, epics.caget(motor.prefix+".MRES"))
     _md = {'detectors': [det.name for det in detectors],
