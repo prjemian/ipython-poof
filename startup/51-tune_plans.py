@@ -5,7 +5,7 @@ print(__file__)
 from bluesky.utils import Msg, separate_devices
 
 
-def maximize_signal(
+def tune_centroid(
         detectors, signal, motor, 
         start, stop, num_points, min_step, 
         step_factor = 2,
@@ -16,8 +16,8 @@ def maximize_signal(
     Initially, traverse the range from start to stop with
     the number of points specified.  Repeat with progressively
     smaller step size until the minimum step size is reached.
-    Rescans will be centered on the signal center of mass
-    (for $I(x)$, COM$= \sum{I}/\sum{x*I}$)
+    Rescans will be centered on the signal centroid
+    (for $I(x)$, centroid$= \sum{I}/\sum{x*I}$)
     with a scan range of 2*step_factor*step of current scan.
 
     Parameters
@@ -38,7 +38,7 @@ def maximize_signal(
     -------
     motor = Mover('motor', {'motor': lambda x: x}, {'x': 0})
     det = SynGauss('det', m1, 'm1', center=-1.3, Imax=1e5, sigma=0.021)
-    RE(maximize_signal([det], "det", motor, -1.5, -0.5, 10, 0.01))
+    RE(tune_centroid([det], "det", motor, -1.5, -0.5, 10, 0.01))
 
     m1 = EpicsMotor('xxx:m1', name='m1')
     synthetic_pseudovoigt = SynPseudoVoigt(
@@ -48,7 +48,7 @@ def maximize_signal(
             sigma=0.001 + 0.05*np.random.uniform(),
             scale=1e5)
     RE(
-        maximize_signal(
+        tune_centroid(
             [synthetic_pseudovoigt], "synthetic_pseudovoigt", 
             motor, 
             -2, 0, 10, 0.001
@@ -70,7 +70,7 @@ def maximize_signal(
                          'stop': stop,
                          'num_points': num_points,
                          'min_step': min_step,},
-           'plan_name': 'maximize_signal',
+           'plan_name': 'tune_centroid',
            'hints': {},
           }
     _md.update(md or {})
@@ -89,7 +89,7 @@ def maximize_signal(
         peak_position = None
         cur_I = None
         cur_det = {}
-        sum_I = 0		# for peak center-of-mass calculation, I(x)
+        sum_I = 0		# for peak centroid calculation, I(x)
         sum_xI = 0
         
         while step >= min_step:
@@ -114,7 +114,7 @@ def maximize_signal(
             else:
                 if sum_I == 0:
                     return
-                peak_position = sum_xI / sum_I  # COM
+                peak_position = sum_xI / sum_I  # centroid
                 # TODO: report current peak_position in metadata
                 RE.md["peak_position"] = str(peak_position)
                 start = peak_position - step_factor*step
@@ -134,10 +134,10 @@ def maximize_signal(
 
 if False:       # demo & testing code
     simulate_peak(calc1, m1, profile="lorentzian")
-    RE(maximize_signal([noisy], "noisy", m1, -2, 0, 10, 0.00001))
+    RE(tune_centroid([noisy], "noisy", m1, -2, 0, 10, 0.00001))
     
     RE(
-        maximize_signal(
+        tune_centroid(
             [synthetic_pseudovoigt], "synthetic_pseudovoigt", m1, 
             -2, 0, 10, 0.00001
         )
