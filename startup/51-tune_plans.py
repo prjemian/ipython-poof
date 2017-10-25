@@ -23,7 +23,13 @@ def tune_centroid(
     with a scan range of 2*step_factor*step of current scan.
     
     Set `snake=True` if your positions are reproducible
-    moving from either direction.
+    moving from either direction.  This will not necessarily
+    decrease the number of steps required to reach convergence.
+    Snake motion reduces the total time spent on motion
+    to reset the positioner.  For some positioners, such as 
+    those with hysteresis, snake scanning may not be appropriate.  
+    For such positioners, always approach the positions from the 
+    same direction.
 
     Parameters
     ----------
@@ -62,12 +68,12 @@ def tune_centroid(
     )
     """
     if step_factor <= 0:
-		raise ValueError("step_factor must be positive")
+        raise ValueError("step_factor must be positive")
     if (num_points - 1) <= 2*step_factor:
-		raise ValueError(
-			"Increase num_points and/or decrease step_factor"
-			" or tune_centroid will never converge to a solution"
-		)
+        raise ValueError(
+            "Increase num_points and/or decrease step_factor"
+            " or tune_centroid will never converge to a solution"
+        )
     if isinstance(motor, EpicsMotor):
         min_step = max(min_step, epics.caget(motor.prefix+".MRES"))
     _md = {'detectors': [det.name for det in detectors],
@@ -101,7 +107,6 @@ def tune_centroid(
         sum_xI = 0
         
         while abs(step) >= min_step:
-            #print(start, stop, step)
             yield Msg('checkpoint')
             yield from bp.mv(motor, next_pos)
             yield Msg('create', None, name='primary')
