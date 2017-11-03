@@ -52,6 +52,6 @@ class SynPseudoVoigt(bluesky.examples.Reader):
         super().__init__(name, {name: pvoigt}, **kwargs)
 
 
-syntheic_pseudovoigt = SynPseudoVoigt(
-	'syntheic_pseudovoigt', m1, 'm1', 
+synthetic_pseudovoigt = SynPseudoVoigt(
+	'synthetic_pseudovoigt', m1, 'm1', 
     center=-1.2, eta=0.5, sigma=0.01, scale=1e5)
