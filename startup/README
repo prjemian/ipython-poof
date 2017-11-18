@@ -15,7 +15,6 @@ For ophyd we use the following (others are ad hoc):
     00 : Setup
     10 : Motors
     20 : Detectors
-    50 : Scans
 
 Started with: https://github.com/NSLS-II-XPD/ipython_ophyd/tree/master/profile_collection/startup
-see: http://xpdacq.github.io
+see: https://xpdacq.github.io
