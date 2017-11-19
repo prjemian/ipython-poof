@@ -16,6 +16,9 @@ aps_current = EpicsSignalRO("S:SRcurrentAI", name="aps_current")
 noisy = EpicsSignalRO('xxx:userCalc1', name='noisy')
 scaler = EpicsScaler('xxx:scaler1', name='scaler')
 
+# only read a few of the many channels
+scaler.channels.read_attrs = "chan1 chan2 chan3 chan6".split()
+
 
 synthetic_pseudovoigt = SynPseudoVoigt(
     'synthetic_pseudovoigt', m1, 'm1', 
