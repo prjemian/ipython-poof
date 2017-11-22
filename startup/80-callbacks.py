@@ -10,8 +10,6 @@ callback_db['doc_collector'] = RE.subscribe(doc_collector.receiver)
 
 specwriter = SpecWriterCallback()
 callback_db['specwriter'] = RE.subscribe(specwriter.receiver)
-
-now = datetime.now()
-sfname = datetime.strftime(now, "/tmp/%Y%m%d-%H%M%S")+".dat"
-print("writing data to SPEC file: ", sfname)
-specwriter.newfile(sfname)
+# make the default SPEC data file in /tmp/yyyymmdd-hhmmss.dat
+specwriter.newfile(os.path.join("/tmp", specwriter.spec_filename))
+print("writing data to SPEC file: ", specwriter.spec_filename)

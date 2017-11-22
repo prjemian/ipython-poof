@@ -3,9 +3,9 @@ print(__file__)
 from APS_BlueSky_tools.devices import *
 
 
-calcs_enable = EpicsSignal("xxx:userCalcEnable", name="calcs_enable")
-calcs_enable.put("Enable")
-calc1 = swaitRecord("xxx:userCalc1", name="calc1")
+calcs = userCalcsDevice("xxx:", name="calcs")
+calcs.enable.put("Enable")
+calc1 = calcs.calc1
 
 
 # Set up default complex devices
