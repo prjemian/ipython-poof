@@ -1,15 +1,9 @@
 print(__file__)
 
-from ophyd import (EpicsScaler, EpicsSignal, EpicsSignalRO,
-                   Device, DeviceStatus)
-from ophyd import Component as Cpt
+"""various detectors and other signals"""
 
-import time
-#import bluesky.examples
 from APS_BlueSky_tools.examples import SynPseudoVoigt
 
-
-aps_current = EpicsSignalRO("S:SRcurrentAI", name="aps_current")
 
 ## Beam Monitor Counts
 #bs_bm2 = EpicsSignalRO('BL14B:Det:BM2', name='bs_bm2')
