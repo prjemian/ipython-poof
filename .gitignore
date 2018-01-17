@@ -9,3 +9,8 @@ security/
 *.pyo
 *~
 mViewer.log
+
+# eclipse IDE
+.project
+.pydevproject
+.settings
