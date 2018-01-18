@@ -24,6 +24,13 @@ from bluesky.plan_tools import print_summary
 import bluesky.plans as bp
 from time import sleep
 import numpy as np
+import bluesky.magics
+
+
+def append_wa_motor_list(*motorlist):
+    """add motors to report in the `wa` command"""
+    BlueskyMagics.positioners += motorlist
+
 
 # Uncomment the following lines to turn on 
 # verbose messages for debugging.
