@@ -40,45 +40,46 @@ class Tardis(E6C):
         return super().set([float(_) for _ in position])
 
 
-tardis = Tardis('', name='tardis')
+if False:
+    tardis = Tardis('', name='tardis')
 
-# re-map Tardis' axis names onto what an E6C expects
-tardis.calc.physical_axis_names = {
-    # Tardis : E6C
-    'mu': 'theta', 
-    'omega': 'omega', 
-    'chi': 'chi', 
-    'phi': 'phi', 
-    'gamma': 'delta', 
-    'delta': 'gamma'
-}
+    # re-map Tardis' axis names onto what an E6C expects
+    tardis.calc.physical_axis_names = {
+        # Tardis : E6C
+        'mu': 'theta', 
+        'omega': 'omega', 
+        'chi': 'chi', 
+        'phi': 'phi', 
+        'gamma': 'delta', 
+        'delta': 'gamma'
+    }
 
-tardis.calc.engine.mode = 'lifting_detector_mu'
+    tardis.calc.engine.mode = 'lifting_detector_mu'
 
-# from this point, we can configure the Tardis instance
-from hkl.util import Lattice
+    # from this point, we can configure the Tardis instance
+    from hkl.util import Lattice
 
 
-# apply some constraints
+    # apply some constraints
 
-tardis_constraints = {
-    # axis: [limits, value, fit]
-    "theta": [(-181, 181), 0, True],
-    
-    # we don't have these axes. Fix them to 0
-    "phi": [(0, 0), 0, False],
-    "chi": [(0, 0), 0, False],
-    "omega": [(0, 0), 0, False],    #tardis.omega.position.real
-    
-    # Attention naming convention inverted at the detector stages!
-    "delta": [(-5, 180), 0, True],
-    "gamma": [(-5, 180), 0, True],
-}
-for axis, constraints in tardis_constraints.items():
-    limits, value, fit = constraints
-    tardis.calc[axis].limits = limits
-    tardis.calc[axis].value = value
-    tardis.calc[axis].fit = fit
+    tardis_constraints = {
+        # axis: [limits, value, fit]
+        "theta": [(-181, 181), 0, True],
+        
+        # we don't have these axes. Fix them to 0
+        "phi": [(0, 0), 0, False],
+        "chi": [(0, 0), 0, False],
+        "omega": [(0, 0), 0, False],    #tardis.omega.position.real
+        
+        # Attention naming convention inverted at the detector stages!
+        "delta": [(-5, 180), 0, True],
+        "gamma": [(-5, 180), 0, True],
+    }
+    for axis, constraints in tardis_constraints.items():
+        limits, value, fit = constraints
+        tardis.calc[axis].limits = limits
+        tardis.calc[axis].value = value
+        tardis.calc[axis].fit = fit
 
 
 
