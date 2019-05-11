@@ -2,7 +2,7 @@ print(__file__)
 
 """various detectors and other signals"""
 
-from APS_BlueSky_tools.examples import SynPseudoVoigt
+from apstools.signals import SynPseudoVoigt
 
 
 ## Beam Monitor Counts

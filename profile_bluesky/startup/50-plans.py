@@ -1,7 +1,7 @@
 print(__file__)
 
 # Bluesky plans (scans)
-from APS_BlueSky_tools.plans import *
+from apstools.plans import *
 
 def demo_tuning():       # demo & testing code
 

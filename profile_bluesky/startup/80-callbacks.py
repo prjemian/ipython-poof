@@ -1,8 +1,8 @@
 print(__file__)
 
 # custom callbacks
-from APS_BlueSky_tools.callbacks import DocumentCollectorCallback
-from APS_BlueSky_tools.filewriters import SpecWriterCallback
+from apstools.callbacks import DocumentCollectorCallback
+from apstools.filewriters import SpecWriterCallback
 
 
 doc_collector = DocumentCollectorCallback()
