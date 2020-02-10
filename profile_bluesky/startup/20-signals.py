@@ -3,7 +3,8 @@ print(__file__)
 """other signals"""
 
 
-calcs = userCalcsDevice("xxx:", name="calcs")
+calcs = UserCalcsDevice("sky:", name="calcs")
+calcs.wait_for_connection()
 calcs.enable.put("Enable")
 calc1 = calcs.calc1
 

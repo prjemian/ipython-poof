@@ -10,7 +10,7 @@ from ophyd import PVPositioner, PVPositionerPC
 from ophyd import AreaDetector, PcoDetectorCam
 from ophyd import SingleTrigger, ImagePlugin, HDF5Plugin
 from ophyd.areadetector.filestore_mixins import FileStoreHDF5IterativeWrite
-from apstools.devices import userCalcsDevice
+from apstools.devices import UserCalcsDevice
 # from apstools.synApps_ophyd import *
 
 

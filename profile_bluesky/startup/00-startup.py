@@ -30,3 +30,7 @@ import numpy as np
 # import logging
 # ophyd.logger.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
+
+# set default timeout for all EpicsSignal connections & communications
+import ophyd
+ophyd.EpicsSignal.set_default_timeout(timeout=10, connection_timeout=5)
