@@ -12,6 +12,7 @@ import bluesky
 import databroker
 from datetime import datetime
 import epics
+import event_model
 import getpass
 import h5py
 import matplotlib
@@ -26,7 +27,7 @@ from .initialize import RE
 
 # Set up default metadata
 
-RE.md['beamline_id'] = 'APS poof'
+RE.md['beamline_id'] = 'poof'
 RE.md['proposal_id'] = 'testing'
 RE.md['pid'] = os.getpid()
 
@@ -35,15 +36,15 @@ USERNAME = getpass.getuser() or 'APS poof user'
 RE.md['login_id'] = USERNAME + '@' + HOSTNAME
 
 # useful diagnostic to record with all data
-versions = dict(
+RE.md['versions'] = dict(
     apstools = apstools.__version__,
     bluesky = bluesky.__version__,
     databroker = databroker.__version__,
     epics = epics.__version__,
+    event_model = event_model.__version__,
     matplotlib = matplotlib.__version__,
     numpy = numpy.__version__,
     ophyd = ophyd.__version__,
     pyRestTable = pyRestTable.__version__,
     spec2nexus = spec2nexus.__version__,
 )
-RE.md['versions'] = versions
