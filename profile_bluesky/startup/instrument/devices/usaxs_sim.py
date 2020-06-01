@@ -19,12 +19,13 @@ logger.info(__file__)
 
 from apstools.devices import setup_lorentzian_swait
 from apstools.devices import SimulatedApsPssShutterWithStatus
+from apstools.plans import TuneAxis
 from apstools.synApps import UserCalcsDevice
 from bluesky import plan_stubs as bps
 import numpy as np
 from ophyd import EpicsSignalRO
 
-from .usaxs_sim_local import *
+from .usaxs_sim_local import UsaxsMotorTunable
 
 
 shutter = SimulatedApsPssShutterWithStatus(
@@ -49,11 +50,14 @@ setup_lorentzian_swait(
     noise=0.05,
 )
 
-def hook_pre_tune_m1(axis):
+def hook_pre_tune_m1():
     yield from bps.mv(shutter, "open")
-def hook_post_tune_m1(axis):
+def hook_post_tune_m1():
     yield from bps.mv(shutter, "close")
 
-m1.tuner = UsaxsTuneAxis([noisy], m1)
 m1.pre_tune_method = hook_pre_tune_m1
 m1.post_tune_method = hook_post_tune_m1
+
+# m1.tuner = UsaxsTuneAxis([noisy], m1)
+m1.tuner = TuneAxis([noisy], m1)
+m1.tuner.peak_factor = 2.5

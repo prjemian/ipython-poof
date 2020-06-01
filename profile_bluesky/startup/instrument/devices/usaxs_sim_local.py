@@ -79,6 +79,8 @@ class TuningResults(Device):
 
 class UsaxsTuneAxis(TuneAxis):
     """use bp.rel_scan() for the tune()"""
+    
+    peak_factor = 4
 
     def peak_analysis(self, initial_position):
         if self.peak_detected():
@@ -277,7 +279,7 @@ class UsaxsTuneAxis(TuneAxis):
         
         ymax = self.peaks.max[-1]
         ymin = self.peaks.min[-1]
-        ok = ymax > 4*ymin        # this works for USAXS@APS
+        ok = ymax > self.peak_factor*ymin        # this works for USAXS@APS
         if not ok:
-            logger.info("ymax/yman not big enough: is it a peak?")
+            logger.info("ymax < ymin * %f: is it a peak?", self.peak_factor)
         return ok
