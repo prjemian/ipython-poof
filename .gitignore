@@ -14,3 +14,6 @@ mViewer.log
 .project
 .pydevproject
 .settings
+
+.logs/
+.ipynb_checkpoints/
