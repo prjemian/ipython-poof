@@ -4,6 +4,8 @@
 *~
 mViewer.log
 
+*.egg-info/
+
 # eclipse IDE
 .project
 .pydevproject
