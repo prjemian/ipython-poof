@@ -7,5 +7,3 @@ local, custom Device definitions
 # under development
 # from .TODO.fourc import *
 # from .TODO.kappa_config import *
-
-from .autocollect import *
