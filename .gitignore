@@ -5,6 +5,7 @@
 mViewer.log
 
 *.egg-info/
+.vscode/
 
 # eclipse IDE
 .project
