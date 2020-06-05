@@ -31,3 +31,7 @@ This file should be installed in `~/.config/databroker/mongodb_config.yml` (eith
 To use this instrument package, import as:
 
     from instrument.collection import *
+
+In an IPython profile directory, put this line in
+a python source file in the profile startup directory,
+such as `~/.ipython/profile_bluesky/startup/00-instrument.py`.
