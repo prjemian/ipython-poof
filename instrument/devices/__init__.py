@@ -8,4 +8,4 @@ local, custom Device definitions
 # from .TODO.fourc import *
 # from .TODO.kappa_config import *
 
-from .usaxs_sim import *
+from .autocollect import *

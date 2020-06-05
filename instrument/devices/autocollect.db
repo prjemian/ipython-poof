@@ -1,0 +1,21 @@
+#
+# file: autocollect.db
+# purpose: EPICS database to define PVs for testing autocollect support
+
+# use:  run this command in a screen session
+#    softIoc -d autocollect.db
+
+record (bo, "9idcLAX:AutoCollectionPermit") {
+    field(ZNAM, "disable")
+    field(ONAM, "enable")
+}
+
+record (bo, "9idcLAX:AutoCollectionStart") {
+    field(ZNAM, "stop")
+    field(ONAM, "start")
+}
+
+record(waveform, "9idcLAX:AutoCollectionStrInput") {
+    field(FTVL, "CHAR")
+    field(NELM, "1024")
+}
