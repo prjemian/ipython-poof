@@ -15,8 +15,10 @@ IOC prefix | provides
 
 This will install the package and allow local
 modifications of the source files to be used right away.
-(Usually requires a restart of the ipython session or restart
-of the jupyter kernel.)
+(Modification of content in this package usually means 
+a restart of the ipython session or restart
+of the jupyter kernel will be necessary to begin
+using the modification.)
 
     pip install -e .
 
