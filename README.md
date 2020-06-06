@@ -1,6 +1,6 @@
 # Instrument Package for Bluesky Development
 
-This package describe the `instrument` configuration
+This package describes the `instrument` configuration
 for a Bluesky developer using EPICS synApps.
 
 EPICS base and synApps and areaDetector are running
