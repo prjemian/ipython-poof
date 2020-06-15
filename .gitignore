@@ -14,3 +14,7 @@ mViewer.log
 
 .logs/
 .ipynb_checkpoints/
+
+# filewriter callback output files
+*.h5
+*.dat
