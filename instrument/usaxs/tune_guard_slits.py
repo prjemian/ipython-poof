@@ -102,7 +102,12 @@ def tune_GslitsCenter(md=None):
             logger.info(table)
 
             def cleanup_then_GuardSlitTuneError(msg):
-                logger.warning(f"{motor.name}: move to {x_c} (initial position)")
+                logger.warning(
+                    "cleanup: %s -- %s: move to %f (initial position)",
+                    msg,
+                    motor.name,
+                    x_c,
+                    )
                 scaler0.select_channels(None)
                 yield from bps.mv(
                     motor, x_c,
@@ -117,8 +122,9 @@ def tune_GslitsCenter(md=None):
                 msg = f"{motor.name}: Computed center too low: {center} < {x_0}"
                 yield from cleanup_then_GuardSlitTuneError(msg)
             if center > x_n:      # sanity check that COM  <= end
-                msg = f"{motor.name}: Computed center too high: {center} > {x_n}"
-                yield from cleanup_then_GuardSlitTuneError(msg)
+                yield from cleanup_then_GuardSlitTuneError(
+                    f"{motor.name}: Computed center too high: {center} > {x_n}"
+                )
             if max(tuner.peaks.y_data) <= guard_slit.tuning_intensity_threshold:
                 msg = f"{motor.name}: Peak intensity not strong enough to tune."
                 msg += f" {max(tuner.peaks.y_data)} < {guard_slit.tuning_intensity_threshold}"
@@ -128,8 +134,14 @@ def tune_GslitsCenter(md=None):
             yield from bps.mv(motor, center)
 
     # Here is the MAIN EVENT
-    yield from tune_guard_slit_motor(guard_slit.y, 2, 50)
-    yield from tune_guard_slit_motor(guard_slit.x, 4, 20)
+    try:
+        yield from tune_guard_slit_motor(guard_slit.y, 2, 50)
+    except GuardSlitTuneError as exc:
+        logger.warning("Could not tune guard_slit.y -- %s", str(exc))
+    try:
+        yield from tune_guard_slit_motor(guard_slit.x, 4, 20)
+    except GuardSlitTuneError as exc:
+        logger.warning("Could not tune guard_slit.y -- %s", str(exc))
 
     yield from bps.mv(scaler0.preset_time, old_preset_time)
 
@@ -252,48 +264,63 @@ def _USAXS_tune_guardSlits(md=None):
 
     tunes = defaultdict(dict)
     logger.info("*** 1. tune top guard slits")
-    yield from tune_blade_edge(
-        guard_slit.top,
-        original_position["top"] + guard_slit.v_step_away,
-        original_position["top"] - guard_slit.v_step_into,
-        60,
-        0.25,
-        tunes["top"])
+    try:
+        yield from tune_blade_edge(
+            guard_slit.top,
+            original_position["top"] + guard_slit.v_step_away,
+            original_position["top"] - guard_slit.v_step_into,
+            60,
+            0.25,
+            tunes["top"])
+    except GuardSlitTuneError as exc:
+        logger.warning(exc)
 
     logger.info("*** 2. tune bottom guard slits")
-    yield from tune_blade_edge(
-        guard_slit.bot,
-        original_position["bot"] - guard_slit.v_step_away,
-        original_position["bot"] + guard_slit.v_step_into,
-        60,
-        0.25,
-        tunes["bot"])
+    try:
+        yield from tune_blade_edge(
+            guard_slit.bot,
+            original_position["bot"] - guard_slit.v_step_away,
+            original_position["bot"] + guard_slit.v_step_into,
+            60,
+            0.25,
+            tunes["bot"])
+    except GuardSlitTuneError as exc:
+        logger.warning(exc)
 
     logger.info("*** 3. tune outboard guard slits")
-    yield from tune_blade_edge(
-        guard_slit.outb,
-        original_position["out"] + guard_slit.h_step_away,
-        original_position["out"] - guard_slit.h_step_into,
-        60,
-        0.25,
-        tunes["out"])
+    try:
+        yield from tune_blade_edge(
+            guard_slit.outb,
+            original_position["out"] + guard_slit.h_step_away,
+            original_position["out"] - guard_slit.h_step_into,
+            60,
+            0.25,
+            tunes["out"])
+    except GuardSlitTuneError as exc:
+        logger.warning(exc)
 
     logger.info("*** 4. tune inboard guard slits")
-    yield from tune_blade_edge(
-        guard_slit.inb,
-        original_position["inb"] - guard_slit.h_step_away,
-        original_position["inb"] + guard_slit.h_step_into,
-        60,
-        0.25,
-        tunes["inb"])
+    try:
+        yield from tune_blade_edge(
+            guard_slit.inb,
+            original_position["inb"] - guard_slit.h_step_away,
+            original_position["inb"] + guard_slit.h_step_into,
+            60,
+            0.25,
+            tunes["inb"])
+    except GuardSlitTuneError as exc:
+        logger.warning(exc)
 
     # Tuning is done, now move the motors to the center of the beam found
-    yield from bps.mv(
-        guard_slit.top, tunes["top"]["position"],
-        guard_slit.bot, tunes["bot"]["position"],
-        guard_slit.outb, tunes["out"]["position"],
-        guard_slit.inb, tunes["inb"]["position"],
-        )
+    try:
+        yield from bps.mv(
+            guard_slit.top, tunes["top"]["position"],
+            guard_slit.bot, tunes["bot"]["position"],
+            guard_slit.outb, tunes["out"]["position"],
+            guard_slit.inb, tunes["inb"]["position"],
+            )
+    except KeyError:
+        pass
 
     # redefine the motor positions so the centers are 0
     def redefine(axis, pos):
@@ -310,14 +337,17 @@ def _USAXS_tune_guardSlits(md=None):
     # center of the slits is set to 0
     # now move the motors to the width found above
     # use average of the individual blade values.
-    v = (tunes["top"]["width"] + tunes["bot"]["width"])/2
-    h = (tunes["out"]["width"] + tunes["inb"]["width"])/2
-    yield from bps.mv(
-        guard_slit.top, v,
-        guard_slit.bot, -v,
-        guard_slit.outb, h,
-        guard_slit.inb, -h,
-        )
+    try:
+        v = (tunes["top"]["width"] + tunes["bot"]["width"])/2
+        h = (tunes["out"]["width"] + tunes["inb"]["width"])/2
+        yield from bps.mv(
+            guard_slit.top, v,
+            guard_slit.bot, -v,
+            guard_slit.outb, h,
+            guard_slit.inb, -h,
+            )
+    except KeyError:
+        pass
 
     # sync the slits software
     yield from bps.mv(

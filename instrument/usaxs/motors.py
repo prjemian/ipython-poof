@@ -114,8 +114,6 @@ class GSlitDevice(MotorBundle):
         return self.h_gap_ok and self.v_h_gap_ok
 
     def status_update(self):
-        # TODO: Did this code cause the following exception?
-        #  RuntimeError: Another set() call is still in progress
         yield from bps.abs_set(self.top.status_update, 1)
         yield from bps.sleep(0.05)
         yield from bps.abs_set(self.bot.status_update, 1)
@@ -124,6 +122,15 @@ class GSlitDevice(MotorBundle):
         yield from bps.sleep(0.05)
         yield from bps.abs_set(self.inb.status_update, 1)
         yield from bps.sleep(0.05)
+
+        # clear a problem for now
+        # TODO: fix the root cause
+        # https://github.com/APS-USAXS/ipython-usaxs/issues/253#issuecomment-678503301
+        # https://github.com/bluesky/ophyd/issues/757#issuecomment-678524271
+        self.top.status_update._set_thread = None
+        self.bot.status_update._set_thread = None
+        self.outb.status_update._set_thread = None
+        self.inb.status_update._set_thread = None
 
 
 guard_slit = GSlitDevice('', name='guard_slit')
