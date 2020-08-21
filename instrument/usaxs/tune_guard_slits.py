@@ -21,21 +21,24 @@ import datetime
 import pyRestTable
 
 from ..framework import RE
-from .derivative import *
-from .motors import *
-from .peak_centers import *
-from .scalers import *
+from .derivative import numerical_derivative
+from .motors import guard_slit, guard_h_size, guard_v_size
+from .peak_centers import peak_center
+from .scalers import scaler0, I0_SIGNAL, I00_SIGNAL, UPD_SIGNAL
 
 
 class GuardSlitTuneError(RuntimeError): ...    # custom error
 
 
-def tune_GslitsCenter():
+def tune_GslitsCenter(md=None):
     """
     plan: optimize the guard slits' position
 
     tune to the peak centers
     """
+    _md = dict()
+    _md.update(md or {})
+
     # yield from IfRequestedStopBeforeNextScan()
     title = "tuning USAXS Gslit center"
     ts = str(datetime.datetime.now())
@@ -133,12 +136,15 @@ def tune_GslitsCenter():
     # yield from bps.mv(ti_filter_shutter, "close")
 
 
-def _USAXS_tune_guardSlits():
+def _USAXS_tune_guardSlits(md=None):
     """
     plan: (internal) this performs the guard slit scan
 
     Called from tune_GslitsSize()
     """
+    _md = dict()
+    _md.update(md or {})
+
     # # define proper counters and set the geometry...
     # plotselect upd2
     # counters cnt_num(I0) cnt_num(upd2)
@@ -176,7 +182,10 @@ def _USAXS_tune_guardSlits():
 
     def cleanup(msg):
         """if scan is aborted, return motors to original positions"""
-        logger.warning("Returning the guard slit motors to original (pre-tune) positions")
+        logger.warning(
+            "cleanup: %s -- "
+            "Returning the guard slit motors to original (pre-tune) positions",
+            msg)
         yield from bps.mv(
             guard_slit.top, original_position["top"],
             guard_slit.bot, original_position["bot"],
@@ -318,12 +327,15 @@ def _USAXS_tune_guardSlits():
     yield from guard_slit.status_update()
 
 
-def tune_GslitsSize():
+def tune_GslitsSize(md=None):
     """
     plan: optimize the guard slits' gap
 
     tune to the slit edges (peak of the derivative of diode vs. position)
     """
+    _md = dict()
+    _md.update(md or {})
+
     # yield from IfRequestedStopBeforeNextScan()
     # yield from mode_USAXS()
     # yield from bps.mv(
@@ -339,19 +351,24 @@ def tune_GslitsSize():
     # # insertCCDfilters
     # yield from insertTransmissionFilters()
     # yield from autoscale_amplifiers([upd_controls, I0_controls, I00_controls])
-    yield from _USAXS_tune_guardSlits()
-    yield from bps.mv(
-        # ti_filter_shutter, "close",
-        guard_h_size, guard_slit.h_size.get(),
-        guard_v_size, guard_slit.v_size.get(),
-        # monochromator.feedback.on, MONO_FEEDBACK_ON,
-    )
-    logger.info(f"Guard slit now: V={guard_slit.v_size.get()} and H={guard_slit.h_size.get()}")
+    try:
+        yield from _USAXS_tune_guardSlits()
+        yield from bps.mv(
+            # ti_filter_shutter, "close",
+            guard_h_size, guard_slit.h_size.get(),
+            guard_v_size, guard_slit.v_size.get(),
+            # monochromator.feedback.on, MONO_FEEDBACK_ON,
+        )
+        logger.info(f"Guard slit now: V={guard_slit.v_size.get()} and H={guard_slit.h_size.get()}")
+    except GuardSlitTuneError as exc:
+        logger.warning("Could not tune guard slits' gap: %s", str(exc))
 
 
-def tune_Gslits():
+def tune_Gslits(md=None):
     """
     plan: scan and find optimal guard slit positions
     """
-    yield from tune_GslitsCenter()
-    yield from tune_GslitsSize()
+    _md = dict()
+    _md.update(md or {})
+    yield from tune_GslitsCenter(md=_md)
+    yield from tune_GslitsSize(md=_md)
