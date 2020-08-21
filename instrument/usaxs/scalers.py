@@ -6,8 +6,10 @@ USAXS scaler0 (only)
 __all__ = """
     scaler0
     clock  I0  I00  upd2  trd  I000
+    CLOCK_SIGNAL
     I0_SIGNAL
     I00_SIGNAL
+    I000_SIGNAL
     UPD_SIGNAL
     TRD_SIGNAL
 """.split()
