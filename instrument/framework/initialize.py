@@ -91,6 +91,10 @@ callback_db['bec'] = RE.subscribe(bec)
 peaks = bec.peaks  # just as alias for less typing
 bec.disable_baseline()
 
+# set default timeout for all EpicsSignal connections & communications
+import ophyd
+ophyd.EpicsSignal.set_default_timeout(timeout=10, connection_timeout=5)
+
 # At the end of every run, verify that files were saved and
 # print a confirmation message.
 from bluesky.callbacks.broker import verify_files_saved
@@ -113,7 +117,3 @@ import numpy as np
 from bluesky.utils import ts_msg_hook
 #RE.msg_hook = ts_msg_hook
 from bluesky.simulators import summarize_plan
-
-# set default timeout for all EpicsSignal connections & communications
-import ophyd
-ophyd.EpicsSignal.set_default_timeout(timeout=10, connection_timeout=5)
