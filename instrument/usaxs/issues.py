@@ -12,20 +12,28 @@ from ..framework import bec
 from .motors import guard_slit
 from .scalers import upd2
 from .tune_guard_slits import tune_Gslits, tune_GslitsCenter, tune_GslitsSize
-from apstools.utils import plot_prune_fifo
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 
 
-def issue253(times=1, md=None):
+_tune_number = 0
+
+def _full_guard_slits_tune_():
+    global _tune_number
+    _tune_number += 1
     _md = dict(
         purpose="test if guard slit motors sometimes stuck in MOVING state",
-        URL="https://github.com/APS-USAXS/ipython-usaxs/issues/253"
+        URL="https://github.com/APS-USAXS/ipython-usaxs/issues/253",
+        tune_number=_tune_number,
     )
-    _md.update(md or {})
+    logger.info("# tune number: %d", _tune_number)
+    yield from tune_Gslits(md=_md)
+    for axis in "y x top bot outb inb".split():     # in order of tune
+        bec.plot_prune_fifo(3, upd2, getattr(guard_slit, axis))
 
-    
+
+def issue253(times=1):
+    global _tune_number
     logger.info("# ------- Testing for issue #253 with %d iterations", times)
-    yield from bps.repeat(tune_Gslits, num=times)
-    for axis in "x y top bot inb outb".split():
-        plot_prune_fifo(bec, 3, upd2, getattr(guard_slit, axis))
+    _tune_number = 0
+    yield from bps.repeat(_full_guard_slits_tune_, num=times)
