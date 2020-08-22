@@ -24,6 +24,8 @@ def issue253(times=1, md=None):
     )
     _md.update(md or {})
 
+    
+    logger.info("# ------- Testing for issue #253 with %d iterations", times)
     yield from bps.repeat(tune_Gslits, num=times)
     for axis in "x y top bot inb outb".split():
         plot_prune_fifo(bec, 3, upd2, getattr(guard_slit, axis))
