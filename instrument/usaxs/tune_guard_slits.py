@@ -24,7 +24,7 @@ from ..framework import RE
 from .derivative import numerical_derivative
 from .motors import guard_slit, guard_h_size, guard_v_size
 from .peak_centers import peak_center
-from .scalers import scaler0, I0_SIGNAL, I00_SIGNAL, UPD_SIGNAL
+from .scalers import scaler0, CLOCK_SIGNAL, I0_SIGNAL, I00_SIGNAL, UPD_SIGNAL
 
 
 class GuardSlitTuneError(RuntimeError): ...    # custom error
@@ -80,7 +80,7 @@ def tune_GslitsCenter(md=None):
         x_n = x_c + abs(width)/2
 
         scaler0.select_channels([UPD_SIGNAL.chname.get()])
-        scaler0.channels.chan01.kind = Kind.config
+        CLOCK_SIGNAL.kind = Kind.config
 
         tuner = TuneAxis([scaler0], motor, signal_name=UPD_SIGNAL.chname.get())
         yield from tuner.tune(width=-width, num=steps+1)
