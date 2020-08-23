@@ -17,6 +17,7 @@ import bluesky.plans as bp
 import matplotlib.pyplot as plt
 
 
+_total_tunes = 0
 _tune_number = 0
 
 
@@ -57,12 +58,13 @@ def trim_all(n=3):
 
 
 def _full_guard_slits_tune_():
-    global _tune_number
+    global _tune_number, _total_tunes
     _tune_number += 1
     _md = dict(
         purpose="test if guard slit motors sometimes stuck in MOVING state",
         URL="https://github.com/APS-USAXS/ipython-usaxs/issues/253",
         tune_number=_tune_number,
+        tune=f"tune_Gslits() {_tune_number} of {_total_tunes}",
     )
     logger.info("# tune number: %d", _tune_number)
     yield from tune_Gslits(md=_md)
@@ -70,7 +72,8 @@ def _full_guard_slits_tune_():
 
 
 def issue253(times=1):
-    global _tune_number
+    global _tune_number, _total_tunes
     logger.info("# ------- Testing for issue #253 with %d iterations", times)
     _tune_number = 0
+    _total_tunes = times
     yield from bps.repeat(_full_guard_slits_tune_, num=times)
