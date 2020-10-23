@@ -8,6 +8,9 @@ logger.info(__file__)
 
 from . import mpl
 
+logger.info("Start soft IOC dockers if PVs not available")
+from .iocs import check_iocs
+
 logger.info("bluesky framework")
 
 from .framework import *

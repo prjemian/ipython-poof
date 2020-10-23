@@ -9,3 +9,9 @@ local, custom Device definitions
 # from .TODO.kappa_config import *
 
 from .adsky import *
+from .calcs import *
+from .iocstats import *
+from .motors import *
+from .scaler import *
+from .signals import *
+from .simulators import *
