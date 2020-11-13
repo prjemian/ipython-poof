@@ -24,8 +24,8 @@ from ophyd.areadetector import SimDetector
 from ophyd.areadetector import SingleTrigger
 from ophyd.areadetector.filestore_mixins import FileStoreHDF5IterativeWrite
 
-
-_ad_prefix = "adsky:"
+ioc_name = "adsky"
+_ad_prefix = f"{ioc_name}:"
 
 DATABROKER_ROOT_PATH = "/tmp/"
 
@@ -37,7 +37,7 @@ WRITE_HDF5_FILE_PATH = "/tmp/simdet/%Y/%m/%d/"
 #!!! NOTE !!! This filesystem is on the IOC
 
 # path as seen by bluesky data acquistion
-READ_HDF5_FILE_PATH = "/tmp/docker_ioc/iocadsky/tmp/simdet/%Y/%m/%d/"
+READ_HDF5_FILE_PATH = f"/tmp/docker_ioc/ioc{ioc_name}{WRITE_HDF5_FILE_PATH}"
 
 
 class MyHDF5Plugin(HDF5Plugin, FileStoreHDF5IterativeWrite):
