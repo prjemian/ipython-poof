@@ -94,7 +94,12 @@ bec.disable_baseline()
 # set default timeout for all EpicsSignalBase connections & communications
 import ophyd
 from ophyd.signal import EpicsSignalBase
-EpicsSignalBase.set_default_timeout(timeout=10, connection_timeout=5)
+# EpicsSignalBase.set_default_timeout(timeout=10, connection_timeout=5)
+EpicsSignalBase.set_defaults(
+    timeout=60,
+    connection_timeout=5,
+    write_timeout=10,
+    auto_monitor=True)
 
 # At the end of every run, verify that files were saved and
 # print a confirmation message.
