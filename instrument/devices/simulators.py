@@ -25,21 +25,21 @@ apstools.devices.setup_lorentzian_swait(
     noise=0.05,
 )
 
-# try:
-#     from .my_registers import mover2, registers
-#     apstools.devices.setup_lorentzian_swait(
-#         calcs.calc2,
-#         mover2,
-#         center = 2*np.random.random() - 1,
-#         width = 0.015 * np.random.random(),
-#         scale = 10000 * (9 + np.random.random()),
-#         noise=0.05,
-#     )
-#     calcs.calc2.output_link_pv.put(registers.decimal1.pvname)
-# except ModuleNotFoundError as exc:
-#     logger.warn(f"ModuleNotFoundError: {exc}")
-# except NameError as exc:
-#     logger.warn(f"variable `registers` is not defined: {exc}")
+try:
+    from .my_registers import mover2, registers
+    apstools.devices.setup_lorentzian_swait(
+        calcs.calc2,
+        mover2,
+        center = 2*np.random.random() - 1,
+        width = 0.015 * np.random.random(),
+        scale = 10000 * (9 + np.random.random()),
+        noise=0.05,
+    )
+    calcs.calc2.output_link_pv.put(registers.decimal1.pvname)
+except ModuleNotFoundError as exc:
+    logger.warn(f"ModuleNotFoundError: {exc}")
+except NameError as exc:
+    logger.warn(f"variable `registers` is not defined: {exc}")
 
 # demonstrate a grid scan: noisy2d(m1, m2)
 #   RE(bp.grid_scan([noisy2d], m1, -0.5, 0.5, 7,  m2, -1, 1, 11, True))
