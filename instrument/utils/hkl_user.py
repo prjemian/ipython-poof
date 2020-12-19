@@ -8,21 +8,23 @@ FUNCTIONS
 
 .. autosummary::
 
+    ~cahkl
+    ~cahkl_table
+    ~calcEnergy
     ~calcUB
     ~listSamples
     ~newSample
     ~selectDiffractometer
+    ~setEnergy
     ~setor
     ~showSample
     ~showSelectedDiffractometer
+    ~updateSample
     ~wh
 
 .. needed
 
     ~changeSample
-    -cahkl          # calculate motors given hkl
-    ~cahkl_table    # show cahkl in a table
-    ~calcE
     ~hklArray
     ~mvhkl          # move to an hkl
     ~realPosition
@@ -30,11 +32,9 @@ FUNCTIONS
     ~scanhkl_array
     ~scanhkl_energy
     ~scanhkl_test
-    ~setEnergy
     ~setWavelength
     ~simMove
     ~table2csv      # is duplicate?
-    ~updateSample
 
 EXAMPLES::
 
@@ -78,13 +78,20 @@ EXAMPLES::
 """
 
 __all__ = """
+    cahkl
+    cahkl_table
+    calcEnergy
     calcUB
+    changeSample
     listSamples
     newSample
     selectDiffractometer
+    setEnergy
     setor
     showSample
     showSelectedDiffractometer
+    updateSample
+    wh
 """.split()
 
 from instrument.session_logs import logger
@@ -95,6 +102,7 @@ import gi
 gi.require_version("Hkl", "5.0")
 from hkl.diffract import Diffractometer
 from hkl.util import Lattice
+import pyRestTable
 
 
 _geom_ = None  # selected diffractometer geometry
@@ -110,6 +118,24 @@ def _check_geom_selected_(*args, **kwargs):
         )
 
 
+def cahkl(h, k, l):
+    """
+    Calculate motor positions for one reflection.
+    
+    Returns a namedtuple.
+    Does not move motors.
+    """
+    _check_geom_selected_()
+    # TODO: make certain this will not move the motors!
+    return _geom_.forward(h, k, l)
+
+
+def cahkl_table(reflections):
+    """Print a table with motor positions for each reflection given."""
+    _check_geom_selected_()
+    print(_geom_.forwardSolutionsTable(reflections))
+
+
 def calcUB(r1, r2, wavelength=None):
     """Compute the UB matrix with two reflections."""
     _check_geom_selected_()
@@ -117,23 +143,45 @@ def calcUB(r1, r2, wavelength=None):
     print(_geom_.calc.sample.UB)
 
 
-def listSamples():
+def changeSample(sample):
+    """Pick a known sample to be the current selection."""
+    _check_geom_selected_()
+    if sample not in _geom_.calc._samples:
+        raise KeyError(
+            f"Sample '{sample}' is unknown."
+            f"  Known samples: {list(_geom_.calc._samples.keys())}"
+        )
+    _geom_.calc.sample = sample
+    showSample(sample)
+
+
+def listSamples(verbose=True):
     """List all defined crystal samples."""
     _check_geom_selected_()
     # always show the default sample first
-    print(_geom_.calc.sample)
+    current_name = _geom_.calc.sample_name
+    showSample(current_name, verbose=verbose)
 
     # now, show any other samples
-    for sample in _geom_.calc._samples.values():
-        if sample != _geom_.calc.sample:
-            print(sample)
+    for sample in _geom_.calc._samples.keys():
+        if sample != current_name:
+            if verbose:
+                print("")
+            showSample(sample, verbose=verbose)
 
 
 def newSample(nm, a, b, c, alpha, beta, gamma):
     """Define a new crystal sample."""
     _check_geom_selected_()
     if nm in _geom_.calc._samples:
-        logger.warning("Sample '%s' is already defined.", nm)
+        logger.warning(
+            (
+                "Sample '%s' is already defined."
+                "  Use 'updateSample()' to change lattice parameters"
+                " on the *current* sample."
+            ),
+            nm
+        )
     else:
         lattice=Lattice(
                 a=a, b=b, c=c, alpha=alpha, beta=beta, gamma=gamma)
@@ -152,11 +200,33 @@ def selectDiffractometer(instrument=None):
         )
 
 
-def setor(h, k, l, *args, wavelength=None):
+def setEnergy(value, units=None):
+    """
+    Set the energy (thus wavelength) to be used.
+
+    Also known as ``calcE`` or ``calcEnergy``
+    """
+    _check_geom_selected_()
+    if units is not None:
+        _geom_.energy_units.put("eV")
+    _geom_._energy_changed(value)
+
+# synonym
+calcEnergy = setEnergy
+
+
+def setor(h, k, l, *args, wavelength=None, **kwargs):
     """Define a crystal reflection and its motor positions."""
     _check_geom_selected_()
     if len(args) == 0:
-        pos = _geom_.real_position
+        if len(kwargs) == 0:
+            pos = _geom_.real_position
+        else:
+            pos = [
+                kwargs[m]
+                for m in _geom_.calc.physical_axis_names
+                if m in kwargs
+            ]
     else:
         pos = args
     # TODO: How does libhkl get the wavelength on a reflection?
@@ -166,10 +236,36 @@ def setor(h, k, l, *args, wavelength=None):
     return refl
 
 
-def showSample():
+def showSample(sample_name = None, verbose=True):
     """Print the default sample name and crystal lattice."""
     _check_geom_selected_()
-    print(_geom_.calc.sample)
+    sample_name = sample_name or _geom_.calc.sample_name
+    sample = _geom_.calc._samples[sample_name]
+
+    title = sample_name
+    if sample_name == _geom_.calc.sample.name:
+        title += " (current)"
+
+    # Print Lattice more simply (than as a namedtuple).
+    lattice = [
+        getattr(sample.lattice, parm)
+        for parm in sample.lattice._fields
+    ]
+    if verbose:
+        tbl = pyRestTable.Table()
+        tbl.addLabel("key")
+        tbl.addLabel("value")
+        tbl.addRow(("name", sample_name))
+        tbl.addRow(("lattice", lattice))
+        for i, r in enumerate(sample.reflections):
+            tbl.addRow((f"reflection {i+1}", r))
+        tbl.addRow(("U", sample.U))
+        tbl.addRow(("UB", sample.UB))
+
+        print(f"Sample: {title}\n")
+        print(tbl)
+    else:
+        print(f"{title}: {lattice}")
 
 
 def showSelectedDiffractometer(instrument=None):
@@ -177,6 +273,13 @@ def showSelectedDiffractometer(instrument=None):
     if _geom_ is None:
         print("No diffractometer selected.")
     print(_geom_.name)
+
+
+def updateSample(a,b,c,alpha,beta,gamma):
+    """Update current sample lattice."""
+    _check_geom_selected_()
+    _geom_.calc.sample.lattice = (a,b,c,alpha,beta,gamma) # define the current sample
+    showSample(_geom_.calc.sample.name, verbose=False)
 
 
 def wh():
