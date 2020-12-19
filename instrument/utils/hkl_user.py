@@ -17,6 +17,25 @@ FUNCTIONS
     ~showSelectedDiffractometer
     ~wh
 
+.. needed
+
+    ~changeSample
+    -cahkl          # calculate motors given hkl
+    ~cahkl_table    # show cahkl in a table
+    ~calcE
+    ~hklArray
+    ~mvhkl          # move to an hkl
+    ~realPosition
+    ~scanhkl
+    ~scanhkl_array
+    ~scanhkl_energy
+    ~scanhkl_test
+    ~setEnergy
+    ~setWavelength
+    ~simMove
+    ~table2csv      # is duplicate?
+    ~updateSample
+
 EXAMPLES::
 
     # work with our 4-circle simulator
