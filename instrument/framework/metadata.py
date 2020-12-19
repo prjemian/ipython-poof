@@ -7,6 +7,9 @@ __all__ = []
 from ..session_logs import logger
 logger.info(__file__)
 
+import gi
+gi.require_version("Hkl", "5.0")
+
 import apstools
 import bluesky
 import databroker
@@ -15,6 +18,7 @@ import epics
 import event_model
 import getpass
 import h5py
+import hkl
 import matplotlib
 import numpy
 import ophyd
@@ -42,6 +46,8 @@ RE.md['versions'] = dict(
     databroker = databroker.__version__,
     epics = epics.__version__,
     event_model = event_model.__version__,
+    h5py = h5py.__version__,
+    # hkl = hkl.__version__,
     matplotlib = matplotlib.__version__,
     numpy = numpy.__version__,
     ophyd = ophyd.__version__,
