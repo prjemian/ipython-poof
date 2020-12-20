@@ -36,6 +36,8 @@ FUNCTIONS
     ~simMove
     ~table2csv      # is duplicate?
 
+.. From here on, belongs in a documentation page, not in source code docs.
+
 EXAMPLES::
 
     # work with our 4-circle simulator
@@ -75,6 +77,34 @@ EXAMPLES::
     # verify that the (0 -4 0) is half a rotation away in chi
     fourc.inverse(-145.5, -90, 0, 69)
 
+Commands for SPEC users
+
+SPEC command    hklpy function
+--              :func:`~calcUB`
+--              :func:`~newSample`
+--              :func:`~selectDiffractometer`
+``br``          TODO:
+``ca``          :func:`cahkl`  (?or is this SPEC's ``cal``?)
+``cuts``        TODO: constraints
+``cz``          TODO:
+``freeze``      TODO: constraints
+``g_sect``      TODO: constraints
+``mz``          TODO:
+``or_swap``     TODO:
+``or0``         :func:`~setor`
+``or1``         :func:`~setor`
+``pa``          TODO: (`fourc.pa()`)
+``pl``          TODO:
+``reflex_beg``  TODO:
+``reflex_end``  TODO:
+``reflex``      TODO:
+``setaz``       TODO:
+``setlat``      :func:`~updateSample`
+``setmode``     TODO: modes
+``setsector``   TODO:
+``sz``          TODO:
+``unfreeze``    TODO: constraints
+``wh``          :func:`~wh`
 """
 
 __all__ = """
@@ -121,7 +151,7 @@ def _check_geom_selected_(*args, **kwargs):
 def cahkl(h, k, l):
     """
     Calculate motor positions for one reflection.
-    
+
     Returns a namedtuple.
     Does not move motors.
     """
