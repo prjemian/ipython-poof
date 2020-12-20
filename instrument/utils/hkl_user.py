@@ -79,7 +79,9 @@ EXAMPLES::
 
 Commands for SPEC users
 
+==============  =======================================
 SPEC command    hklpy function
+==============  =======================================
 --              :func:`~calcUB`
 --              :func:`~newSample`
 --              :func:`~selectDiffractometer`
@@ -105,6 +107,7 @@ SPEC command    hklpy function
 ``sz``          TODO:
 ``unfreeze``    TODO: constraints
 ``wh``          :func:`~wh`
+==============  =======================================
 """
 
 __all__ = """
