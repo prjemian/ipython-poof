@@ -20,6 +20,7 @@ from hkl.util import Lattice
 from ophyd import Component
 from ophyd import PseudoSingle
 from ophyd import SoftPositioner
+from ..utils import selectDiffractometer
 
 
 class FourCircleDiffractometer(DiffractometerMixin, E4CV):
@@ -43,3 +44,4 @@ class FourCircleDiffractometer(DiffractometerMixin, E4CV):
 
 
 fourc = FourCircleDiffractometer("", name="fourc", labels=("diffractometer", "fourc"))
+selectDiffractometer(fourc)
