@@ -1,25 +1,25 @@
-
 """
 detectors (area detectors handled separately)
 """
 
 __all__ = [
-    'scaler',
-    'clock',
-    'I0',
-    'scint',
-    'diode',
-    'I0Mon',
-    'ROI1',
-    'ROI2'
+    "scaler",
+    "clock",
+    "I0",
+    "scint",
+    "diode",
+    "I0Mon",
+    "ROI1",
+    "ROI2",
 ]
 
 from ophyd.scaler import ScalerCH
 from ..session_logs import logger
+
 logger.info(__file__)
 
 
-scaler = ScalerCH('sky:scaler1', name='scaler', labels=("detectors",))
+scaler = ScalerCH("sky:scaler1", name="scaler", labels=("detectors",))
 
 if len(scaler.channels.chan01.chname.get()) == 0:
     scaler.channels.chan01.chname.put("clock")

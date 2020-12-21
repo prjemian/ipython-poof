@@ -1,13 +1,13 @@
-
 """
 check_limits
 """
 
 __all__ = [
-    'check_limits',
-    ]
+    "check_limits",
+]
 
 from ..session_logs import logger
+
 logger.info(__file__)
 
 
@@ -21,5 +21,5 @@ def check_limits(plan):
         Must yield `Msg` objects
     """
     for msg in plan:
-        if msg.command == 'set':
+        if msg.command == "set":
             msg.obj.check_value(msg.args[0])

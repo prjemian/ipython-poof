@@ -1,4 +1,3 @@
-
 """
 USAXS scaler0 (only)
 """
@@ -15,16 +14,18 @@ __all__ = """
 """.split()
 
 from ..session_logs import logger
+
 logger.info(__file__)
 
 from ophyd import Component, EpicsSignal, EpicsScaler, EpicsSignalRO
 from ophyd.scaler import ScalerCH
 
+
 class myScalerCH(ScalerCH):
     display_rate = Component(EpicsSignal, ".RATE")
 
 
-scaler0 = myScalerCH('lax:scaler1', name='scaler0', labels = ["detectors",])
+scaler0 = myScalerCH("lax:scaler1", name="scaler0", labels=["detectors",])
 
 CLOCK_SIGNAL = scaler0.channels.chan01
 I0_SIGNAL = scaler0.channels.chan02

@@ -1,4 +1,3 @@
-
 """
 USAXS motors
 """
@@ -12,6 +11,7 @@ __all__ = """
 """.split()
 
 from ..session_logs import logger
+
 logger.info(__file__)
 
 from ..framework import sd
@@ -21,8 +21,8 @@ from ophyd import Component, EpicsMotor, EpicsSignal, MotorBundle, Signal
 import ophyd
 
 
-guard_h_size = Signal(name="guard_h_size", value=.5, labels=["terms",])
-guard_v_size = Signal(name="guard_v_size", value=.5, labels=["terms",])
+guard_h_size = Signal(name="guard_h_size", value=0.5, labels=["terms",])
+guard_v_size = Signal(name="guard_v_size", value=0.5, labels=["terms",])
 
 
 def move_motors(*args):
@@ -47,10 +47,11 @@ class UsaxsSlitDevice(MotorBundle):
     * center of slit: (x, y)
     * aperture: (h_size, v_size)
     """
-    h_size = Component(EpicsMotor, 'lax:m11', labels=("uslit", "motor"))
-    x      = Component(EpicsMotor, 'lax:m12', labels=("uslit", "motor"))
-    v_size = Component(EpicsMotor, 'lax:m13', labels=("uslit", "motor"))
-    y      = Component(EpicsMotor, 'lax:m14', labels=("uslit", "motor"))
+
+    h_size = Component(EpicsMotor, "lax:m11", labels=("uslit", "motor"))
+    x = Component(EpicsMotor, "lax:m12", labels=("uslit", "motor"))
+    v_size = Component(EpicsMotor, "lax:m13", labels=("uslit", "motor"))
+    y = Component(EpicsMotor, "lax:m14", labels=("uslit", "motor"))
 
     def set_size(self, *args, h=None, v=None):
         """move the slits to the specified size"""
@@ -70,25 +71,26 @@ class GSlitDevice(MotorBundle):
     guard slit
     * aperture: (h_size, v_size)
     """
-    bot  = Component(GuardSlitMotor, 'lax:m6', labels=("gslit", "motor"))
-    inb  = Component(GuardSlitMotor, 'lax:m4', labels=("gslit", "motor"))
-    outb = Component(GuardSlitMotor, 'lax:m3', labels=("gslit", "motor"))
-    top  = Component(GuardSlitMotor, 'lax:m5', labels=("gslit", "motor"))
-    x    = Component(EpicsMotor, 'lax:m1', labels=("gslit", "motor"))
-    y    = Component(EpicsMotor, 'lax:m2', labels=("gslit", "motor"))
 
-    h_size = Component(EpicsSignal, 'lax:Slit1Hsize')
-    v_size = Component(EpicsSignal, 'lax:Slit1Vsize')
+    bot = Component(GuardSlitMotor, "lax:m6", labels=("gslit", "motor"))
+    inb = Component(GuardSlitMotor, "lax:m4", labels=("gslit", "motor"))
+    outb = Component(GuardSlitMotor, "lax:m3", labels=("gslit", "motor"))
+    top = Component(GuardSlitMotor, "lax:m5", labels=("gslit", "motor"))
+    x = Component(EpicsMotor, "lax:m1", labels=("gslit", "motor"))
+    y = Component(EpicsMotor, "lax:m2", labels=("gslit", "motor"))
 
-    h_sync_proc = Component(EpicsSignal, 'lax:Slit1Hsync.PROC')
-    v_sync_proc = Component(EpicsSignal, 'lax:Slit1Vsync.PROC')
+    h_size = Component(EpicsSignal, "lax:Slit1Hsize")
+    v_size = Component(EpicsSignal, "lax:Slit1Vsize")
 
-    gap_tolerance = 0.02        # actual must be this close to desired
-    scale_factor = 1.2    # 1.2x the size of the beam should be good guess for guard slits.
-    h_step_away = 0.2     # 0.2mm step away from beam
-    v_step_away = 0.1     # 0.1mm step away from beam
-    h_step_into = 1.1     # 1.1mm step into the beam (blocks the beam)
-    v_step_into = 0.4     # 0.4mm step into the beam (blocks the beam)
+    h_sync_proc = Component(EpicsSignal, "lax:Slit1Hsync.PROC")
+    v_sync_proc = Component(EpicsSignal, "lax:Slit1Vsync.PROC")
+
+    gap_tolerance = 0.02  # actual must be this close to desired
+    scale_factor = 1.2  # 1.2x the size of the beam should be good guess for guard slits.
+    h_step_away = 0.2  # 0.2mm step away from beam
+    v_step_away = 0.1  # 0.1mm step away from beam
+    h_step_into = 1.1  # 1.1mm step into the beam (blocks the beam)
+    v_step_into = 0.4  # 0.4mm step into the beam (blocks the beam)
     tuning_intensity_threshold = 500
 
     def set_size(self, *args, h=None, v=None):
@@ -133,5 +135,5 @@ class GSlitDevice(MotorBundle):
         self.inb.status_update._set_thread = None
 
 
-guard_slit = GSlitDevice('', name='guard_slit')
-usaxs_slit = UsaxsSlitDevice('', name='usaxs_slit')
+guard_slit = GSlitDevice("", name="guard_slit")
+usaxs_slit = UsaxsSlitDevice("", name="usaxs_slit")

@@ -1,15 +1,15 @@
-
 """
 area detector: ADSimDetector using IOC adsky
 """
 
 __all__ = [
-    'adsimdet',
-    'paces',
-    'shot',
-    ]
+    "adsimdet",
+    "paces",
+    "shot",
+]
 
 from ..session_logs import logger
+
 logger.info(__file__)
 
 from bluesky import plans as bp
@@ -37,21 +37,27 @@ WRITE_HDF5_FILE_PATH = "/tmp/simdet/%Y/%m/%d/"
 #!!! NOTE !!! This filesystem is on the IOC
 
 # path as seen by bluesky data acquistion
-READ_HDF5_FILE_PATH = f"/tmp/docker_ioc/ioc{ioc_name}{WRITE_HDF5_FILE_PATH}"
+READ_HDF5_FILE_PATH = (
+    f"/tmp/docker_ioc/ioc{ioc_name}{WRITE_HDF5_FILE_PATH}"
+)
 
 
 class MyHDF5Plugin(HDF5Plugin, FileStoreHDF5IterativeWrite):
-    create_directory_depth = Component(EpicsSignalWithRBV, suffix="CreateDirectory")
-    array_callbacks = Component(EpicsSignalWithRBV, suffix="ArrayCallbacks")
+    create_directory_depth = Component(
+        EpicsSignalWithRBV, suffix="CreateDirectory"
+    )
+    array_callbacks = Component(
+        EpicsSignalWithRBV, suffix="ArrayCallbacks"
+    )
 
     pool_max_buffers = None
-    
+
     def get_frames_per_point(self):
         return self.num_capture.get()
 
     def stage(self):
         super().stage()
-        res_kwargs = {'frame_per_point': self.get_frames_per_point()}
+        res_kwargs = {"frame_per_point": self.get_frames_per_point()}
         # res_kwargs = {'frame_per_point': self.num_capture.get()}
         self._generate_resource(res_kwargs)
 
@@ -60,13 +66,14 @@ class MySingleTriggerSimDetector(SingleTrigger, SimDetector):
     image = Component(ImagePlugin, suffix="image1:")
     hdf1 = ADComponent(
         MyHDF5Plugin,
-        suffix='HDF1:', 
+        suffix="HDF1:",
         root=DATABROKER_ROOT_PATH,
-        write_path_template = WRITE_HDF5_FILE_PATH,
-        read_path_template = READ_HDF5_FILE_PATH,
+        write_path_template=WRITE_HDF5_FILE_PATH,
+        read_path_template=READ_HDF5_FILE_PATH,
     )
 
-adsimdet = MySingleTriggerSimDetector(_ad_prefix, name='adsimdet')
+
+adsimdet = MySingleTriggerSimDetector(_ad_prefix, name="adsimdet")
 adsimdet.wait_for_connection()
 adsimdet.stage_sigs["cam.num_images"] = 1
 adsimdet.stage_sigs["cam.acquire_time"] = 0.01
@@ -87,11 +94,7 @@ def shot(images=1, exposures=1, num=1, md={}):
     adsimdet.stage_sigs["cam.num_images"] = images
     adsimdet.stage_sigs["cam.num_exposures"] = exposures
     adsimdet.hdf1.stage_sigs["num_capture"] = exposures * images
-    _md = dict(
-        num_counts=num,
-        num_images=images,
-        num_exposures=exposures,
-    )
+    _md = dict(num_counts=num, num_images=images, num_exposures=exposures,)
     _md.update(md)
 
     # logger.info("new metadata: %s", _md)
@@ -100,13 +103,14 @@ def shot(images=1, exposures=1, num=1, md={}):
 
 
 def paces(title=None, md={}):
-    title=title or "area detector acquisition"
+    title = title or "area detector acquisition"
     _md = dict(title=title)
     _md.update(md)
     for num in (2, 1):
         for images in (2, 1):
             for exposures in (2, 1):
                 yield from shot(images, exposures, num, md=_md)
+
 
 """
 RE(paces(), subtitle=""with HDF5 plugin"")

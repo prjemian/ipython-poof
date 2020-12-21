@@ -1,4 +1,3 @@
-
 """
 GitHub issues
 """
@@ -6,12 +5,17 @@ GitHub issues
 __all__ = ["issue253", "trim_all"]
 
 from ..session_logs import logger
+
 logger.info(__file__)
 
 from ..framework import bec
 from .motors import guard_slit
 from .scalers import upd2
-from .tune_guard_slits import tune_Gslits, tune_GslitsCenter, tune_GslitsSize
+from .tune_guard_slits import (
+    tune_Gslits,
+    tune_GslitsCenter,
+    tune_GslitsSize,
+)
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import matplotlib.pyplot as plt
@@ -47,13 +51,16 @@ def trim_plot(bec, n, x, y):
         except ValueError as exc:
             logger.warning(
                 "%s vs %s: mpl remove() error: %s",
-                y.name, x.name, str(exc))
+                y.name,
+                x.name,
+                str(exc),
+            )
     ax.legend()
     liveplot.update_plot()
 
 
 def trim_all(n=3):
-    for axis in "y x top bot outb inb".split():     # in order of tune
+    for axis in "y x top bot outb inb".split():  # in order of tune
         trim_plot(bec, n, getattr(guard_slit, axis), upd2)
 
 
@@ -73,7 +80,9 @@ def _full_guard_slits_tune_():
 
 def issue253(times=1):
     global _tune_number, _total_tunes
-    logger.info("# ------- Testing for issue #253 with %d iterations", times)
+    logger.info(
+        "# ------- Testing for issue #253 with %d iterations", times
+    )
     _tune_number = 0
     _total_tunes = times
     yield from bps.repeat(_full_guard_slits_tune_, num=times)

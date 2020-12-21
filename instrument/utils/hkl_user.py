@@ -132,6 +132,7 @@ from instrument.session_logs import logger
 logger.info(__file__)
 
 import gi
+
 gi.require_version("Hkl", "5.0")
 from hkl.diffract import Diffractometer
 from hkl.util import Lattice
@@ -213,11 +214,12 @@ def newSample(nm, a, b, c, alpha, beta, gamma):
                 "  Use 'updateSample()' to change lattice parameters"
                 " on the *current* sample."
             ),
-            nm
+            nm,
         )
     else:
-        lattice=Lattice(
-                a=a, b=b, c=c, alpha=alpha, beta=beta, gamma=gamma)
+        lattice = Lattice(
+            a=a, b=b, c=c, alpha=alpha, beta=beta, gamma=gamma
+        )
         _geom_.calc.new_sample(nm, lattice=lattice)
     showSample()
 
@@ -244,6 +246,7 @@ def setEnergy(value, units=None):
         _geom_.energy_units.put("eV")
     _geom_._energy_changed(value)
 
+
 # synonym
 calcEnergy = setEnergy
 
@@ -269,7 +272,7 @@ def setor(h, k, l, *args, wavelength=None, **kwargs):
     return refl
 
 
-def showSample(sample_name = None, verbose=True):
+def showSample(sample_name=None, verbose=True):
     """Print the default sample name and crystal lattice."""
     _check_geom_selected_()
     sample_name = sample_name or _geom_.calc.sample_name
@@ -281,8 +284,7 @@ def showSample(sample_name = None, verbose=True):
 
     # Print Lattice more simply (than as a namedtuple).
     lattice = [
-        getattr(sample.lattice, parm)
-        for parm in sample.lattice._fields
+        getattr(sample.lattice, parm) for parm in sample.lattice._fields
     ]
     if verbose:
         tbl = pyRestTable.Table()
@@ -308,10 +310,17 @@ def showSelectedDiffractometer(instrument=None):
     print(_geom_.name)
 
 
-def updateSample(a,b,c,alpha,beta,gamma):
+def updateSample(a, b, c, alpha, beta, gamma):
     """Update current sample lattice."""
     _check_geom_selected_()
-    _geom_.calc.sample.lattice = (a,b,c,alpha,beta,gamma) # define the current sample
+    _geom_.calc.sample.lattice = (
+        a,
+        b,
+        c,
+        alpha,
+        beta,
+        gamma,
+    )  # define the current sample
     showSample(_geom_.calc.sample.name, verbose=False)
 
 

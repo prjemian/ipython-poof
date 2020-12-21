@@ -1,4 +1,3 @@
-
 """
 simulators
 """
@@ -6,6 +5,7 @@ simulators
 __all__ = []
 
 from ..session_logs import logger
+
 logger.info(__file__)
 
 
@@ -19,20 +19,21 @@ from .motors import m1, m2
 apstools.devices.setup_lorentzian_swait(
     calcs.calc1,
     m1.user_readback,
-    center = 2*np.random.random() - 1,
-    width = 0.015 * np.random.random(),
-    scale = 10000 * (9 + np.random.random()),
+    center=2 * np.random.random() - 1,
+    width=0.015 * np.random.random(),
+    scale=10000 * (9 + np.random.random()),
     noise=0.05,
 )
 
 try:
     from .my_registers import mover2, registers
+
     apstools.devices.setup_lorentzian_swait(
         calcs.calc2,
         mover2,
-        center = 2*np.random.random() - 1,
-        width = 0.015 * np.random.random(),
-        scale = 10000 * (9 + np.random.random()),
+        center=2 * np.random.random() - 1,
+        width=0.015 * np.random.random(),
+        scale=10000 * (9 + np.random.random()),
         noise=0.05,
     )
     calcs.calc2.output_link_pv.put(registers.decimal1.pvname)
@@ -59,6 +60,6 @@ calcs.calc3.channels.C.input_value.put(10000 * (9 + np.random.random()))
 # calcs.calc3.channels.K.input_value.put()
 # calcs.calc3.channels.L.input_value.put()
 calcs.calc3.calculation.put("C * RNDM")
-calcs.calc3.precision.put(2) 
+calcs.calc3.precision.put(2)
 calcs.calc3.scanning_rate.put("I/O Intr")
 noisy2d = calcs.calc3.calculated_value

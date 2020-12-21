@@ -28,10 +28,18 @@ class FourCircleDiffractometer(DiffractometerMixin, E4CV):
     k = Component(PseudoSingle, "", labels=("hkl", "fourc"), kind="hinted")
     l = Component(PseudoSingle, "", labels=("hkl", "fourc"), kind="hinted")
 
-    omega = Component(SoftPositioner, labels=("motor", "fourc"), kind="hinted")
-    chi = Component(SoftPositioner, labels=("motor", "fourc"), kind="hinted")
-    phi = Component(SoftPositioner, labels=("motor", "fourc"), kind="hinted")
-    tth = Component(SoftPositioner, labels=("motor", "fourc"), kind="hinted")
+    omega = Component(
+        SoftPositioner, labels=("motor", "fourc"), kind="hinted"
+    )
+    chi = Component(
+        SoftPositioner, labels=("motor", "fourc"), kind="hinted"
+    )
+    phi = Component(
+        SoftPositioner, labels=("motor", "fourc"), kind="hinted"
+    )
+    tth = Component(
+        SoftPositioner, labels=("motor", "fourc"), kind="hinted"
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -43,5 +51,7 @@ class FourCircleDiffractometer(DiffractometerMixin, E4CV):
             axis.move(0)
 
 
-fourc = FourCircleDiffractometer("", name="fourc", labels=("diffractometer", "fourc"))
+fourc = FourCircleDiffractometer(
+    "", name="fourc", labels=("diffractometer", "fourc")
+)
 selectDiffractometer(fourc)

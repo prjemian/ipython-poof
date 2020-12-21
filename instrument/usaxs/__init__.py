@@ -1,6 +1,6 @@
-
 try:
     import ophyd
+
     ophyd.EpicsSignal.set_default_timeout(timeout=10, connection_timeout=5)
 except RuntimeError:
     pass
