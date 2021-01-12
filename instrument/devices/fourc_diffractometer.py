@@ -15,7 +15,10 @@ gi.require_version("Hkl", "5.0")
 from apstools.diffractometer import DiffractometerMixin
 from bluesky import plan_stubs as bps
 from bluesky import plans as bp
-from hkl.diffract import E4CV
+try:
+    from hkl.geometries import E4CV
+except ModuleNotFoundError:
+    from hkl.diffract import E4CV
 from hkl.util import Lattice
 from ophyd import Component
 from ophyd import PseudoSingle
