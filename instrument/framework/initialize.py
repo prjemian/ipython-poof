@@ -30,6 +30,7 @@ import databroker
 import ophyd
 import os
 import sys
+import warnings
 
 # convenience imports
 import bluesky.plans as bp
@@ -121,7 +122,9 @@ except Exception as exc:
 
 # At the end of every run, verify that files were saved and
 # print a confirmation message.
-# callback_db['post_run_verify'] = RE.subscribe(post_run(verify_files_saved), 'stop')
+# callback_db['post_run_verify'] = RE.subscribe(
+#     post_run(verify_files_saved), 'stop'
+# )
 
 # Uncomment the following lines to turn on
 # verbose messages for debugging.
