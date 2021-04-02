@@ -2,6 +2,9 @@
 area detector: ADSimDetector using IOC adsky
 """
 
+# FIXME: use version-specific plugins to match missing/new attributes
+# TODO: update to latest recommendations
+
 __all__ = [
     "adsimdet",
     "paces",
@@ -21,6 +24,7 @@ from ophyd.areadetector import EpicsSignalWithRBV
 from ophyd.areadetector import HDF5Plugin
 from ophyd.areadetector import ImagePlugin
 from ophyd.areadetector import SimDetector
+from ophyd.areadetector import SimDetectorCam
 from ophyd.areadetector import SingleTrigger
 from ophyd.areadetector.filestore_mixins import FileStoreHDF5IterativeWrite
 
@@ -42,6 +46,11 @@ READ_HDF5_FILE_PATH = (
 )
 
 
+class MyCam(SimDetectorCam):
+
+    pool_max_buffers = None
+
+
 class MyHDF5Plugin(HDF5Plugin, FileStoreHDF5IterativeWrite):
     create_directory_depth = Component(
         EpicsSignalWithRBV, suffix="CreateDirectory"
@@ -50,6 +59,7 @@ class MyHDF5Plugin(HDF5Plugin, FileStoreHDF5IterativeWrite):
         EpicsSignalWithRBV, suffix="ArrayCallbacks"
     )
 
+    file_number_sync = None
     pool_max_buffers = None
 
     def get_frames_per_point(self):
@@ -62,8 +72,13 @@ class MyHDF5Plugin(HDF5Plugin, FileStoreHDF5IterativeWrite):
         self._generate_resource(res_kwargs)
 
 
+class MyImagePlugin(ImagePlugin):
+
+    pool_max_buffers = None
+
+
 class MySingleTriggerSimDetector(SingleTrigger, SimDetector):
-    image = Component(ImagePlugin, suffix="image1:")
+    cam = ADComponent(MyCam, suffix="cam1:")
     hdf1 = ADComponent(
         MyHDF5Plugin,
         suffix="HDF1:",
@@ -71,6 +86,7 @@ class MySingleTriggerSimDetector(SingleTrigger, SimDetector):
         write_path_template=WRITE_HDF5_FILE_PATH,
         read_path_template=READ_HDF5_FILE_PATH,
     )
+    image = ADComponent(MyImagePlugin, suffix="image1:")
 
 
 adsimdet = MySingleTriggerSimDetector(_ad_prefix, name="adsimdet")

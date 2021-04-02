@@ -4,7 +4,7 @@ local, custom Device definitions
 
 # from .aps_source import *
 
-from .adsky import *
+# from .adsky import *
 from .calcs import *
 # from .fourc_diffractometer import *
 from .iocstats import *
